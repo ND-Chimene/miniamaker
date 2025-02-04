@@ -31,6 +31,10 @@ class Subscription
     #[ORM\OneToOne(inversedBy: 'subscription', cascade: ['persist', 'remove'])]
     private ?User $pro = null;
 
+    #[ORM\ManyToOne(inversedBy: 'subscription')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Promo $promo = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -104,6 +108,18 @@ class Subscription
     public function setPro(?User $pro): static
     {
         $this->pro = $pro;
+
+        return $this;
+    }
+
+    public function getPromo(): ?Promo
+    {
+        return $this->promo;
+    }
+
+    public function setPromo(?Promo $promo): static
+    {
+        $this->promo = $promo;
 
         return $this;
     }
