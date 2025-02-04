@@ -35,6 +35,24 @@ class Subscription
     #[ORM\JoinColumn(nullable: false)]
     private ?Promo $promo = null;
 
+    public function __construct()
+    {
+        $this->is_active = false;
+    }
+
+    #[ORM\PrePersist]
+    public function setCreatedAtValue()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue()
+    {
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;

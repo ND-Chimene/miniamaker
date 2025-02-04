@@ -33,6 +33,19 @@ class LandingPage
     #[ORM\ManyToMany(targetEntity: Tag::class, mappedBy: 'landing_page')]
     private Collection $tags;
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue()
+    {
+        $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function setUpdatedAtValue()
+    {
+        $this->updated_at = new \DateTimeImmutable();
+    }
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
