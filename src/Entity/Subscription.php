@@ -3,9 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\SubscriptionRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SubscriptionRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Subscription
 {
     #[ORM\Id]
@@ -13,10 +16,20 @@ class Subscription
     #[ORM\Column]
     private ?int $id = null;
 
+    /**
+     * @var Collection<int, User>
+     */
+    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'subscription')]
+    private Collection $clients;
+
     #[ORM\Column]
     private ?bool $is_active = null;
 
-    #[ORM\Column]
+    #[ORM\Column(
+        type: 'decimal',
+        precision: 7, // Nombre total ex. 10 000,00
+        scale: 2, // Nombre de décimales ex. 2 = 0,00
+        )]
     private ?int $amount = null;
 
     #[ORM\Column(length: 80)]
@@ -28,27 +41,30 @@ class Subscription
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\OneToOne(inversedBy: 'subscription', cascade: ['persist', 'remove'])]
-    private ?User $pro = null;
-
-    #[ORM\ManyToOne(inversedBy: 'subscription')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Promo $promo = null;
+    /**
+     * @var Collection<int, Promo>
+     */
+    #[ORM\OneToMany(targetEntity: Promo::class, mappedBy: 'subscription')]
+    private Collection $promos;
 
     public function __construct()
     {
+        $this->promos = new ArrayCollection();
+        $this->clients = new ArrayCollection();
         $this->is_active = false;
+        $this->amount = 99.97;
+        $this->frequency = 'monthly';
     }
 
     #[ORM\PrePersist]
-    public function setCreatedAtValue()
+    public function prePersist(): void
     {
         $this->created_at = new \DateTimeImmutable();
         $this->updated_at = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function setUpdatedAtValue()
+    public function preUpdate(): void
     {
         $this->updated_at = new \DateTimeImmutable();
     }
@@ -118,26 +134,62 @@ class Subscription
         return $this;
     }
 
-    public function getPro(): ?User
+    /**
+     * @return Collection<int, Promo>
+     */
+    public function getPromos(): Collection
     {
-        return $this->pro;
+        return $this->promos;
     }
 
-    public function setPro(?User $pro): static
+    public function addPromo(Promo $promo): static
     {
-        $this->pro = $pro;
+        if (!$this->promos->contains($promo)) {
+            $this->promos->add($promo);
+            $promo->setSubscription($this);
+        }
 
         return $this;
     }
 
-    public function getPromo(): ?Promo
+    public function removePromo(Promo $promo): static
     {
-        return $this->promo;
+        if ($this->promos->removeElement($promo)) {
+            // set the owning side to null (unless already changed)
+            if ($promo->getSubscription() === $this) {
+                $promo->setSubscription(null);
+            }
+        }
+
+        return $this;
     }
 
-    public function setPromo(?Promo $promo): static
+    /**
+     * @return Collection<int, User>
+     */
+    public function getClients(): Collection
     {
-        $this->promo = $promo;
+        return $this->clients;
+    }
+
+    public function addClient(User $client): static
+    {
+        if (!$this->clients->contains($client)) {
+            $this->clients->add($client);
+            $client->setSubscription($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClient(User $client): static
+    {
+        if ($this->clients->removeElement($client)) {
+            // set the owning side to null (unless already changed)
+            if ($client->getSubscription() === $this) {
+                $client->setSubscription($this);
+            }
+        }
 
         return $this;
     }

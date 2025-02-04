@@ -21,17 +21,15 @@ class Promo
     #[ORM\Column]
     private ?int $percent = null;
 
-    /**
-     * @var Collection<int, Subscription>
-     */
-    #[ORM\OneToMany(targetEntity: Subscription::class, mappedBy: 'promo')]
-    private Collection $subscription;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
+
+    #[ORM\ManyToOne(inversedBy: 'promos')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Subscription $subscription = null;
 
     #[ORM\PrePersist]
     public function setCreatedAtValue()
@@ -44,11 +42,6 @@ class Promo
     public function setUpdatedAtValue()
     {
         $this->updated_at = new \DateTimeImmutable();
-    }
-
-    public function __construct()
-    {
-        $this->subscription = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -80,36 +73,6 @@ class Promo
         return $this;
     }
 
-    /**
-     * @return Collection<int, Subscription>
-     */
-    public function getSubscription(): Collection
-    {
-        return $this->subscription;
-    }
-
-    public function addSubscription(Subscription $subscription): static
-    {
-        if (!$this->subscription->contains($subscription)) {
-            $this->subscription->add($subscription);
-            $subscription->setPromo($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubscription(Subscription $subscription): static
-    {
-        if ($this->subscription->removeElement($subscription)) {
-            // set the owning side to null (unless already changed)
-            if ($subscription->getPromo() === $this) {
-                $subscription->setPromo(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;
@@ -130,6 +93,18 @@ class Promo
     public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    public function getSubscription(): ?Subscription
+    {
+        return $this->subscription;
+    }
+
+    public function setSubscription(?Subscription $subscription): static
+    {
+        $this->subscription = $subscription;
 
         return $this;
     }

@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[ORM\HasLifecycleCallbacks]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')] // Gestion de createdAt et updatedAt
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')] // Gestion des created et updated
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -62,11 +62,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    #[ORM\OneToOne(mappedBy: 'pro', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'clients')]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Subscription $subscription = null;
 
     /**
-     *  Constructeur pour les gérer les attributs non-nullable par défaut
+     * Constructeur pour gérer les
+     * attributs non-nullables par défaut
      */
     public function __construct()
     {
@@ -117,6 +119,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     /**
      * @see UserInterface
+     *
      * @return list<string>
      */
     public function getRoles(): array
@@ -251,15 +254,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->detail;
     }
 
-    public function setDetail(?Detail $detail): static
+    public function setDetail(Detail $detail): static
     {
-        // unset the owning side of the relation if necessary
-        if ($detail === null && $this->detail !== null) {
-            $this->detail->setPro(null);
-        }
-
         // set the owning side of the relation if necessary
-        if ($detail !== null && $detail->getPro() !== $this) {
+        if ($detail->getPro() !== $this) {
             $detail->setPro($this);
         }
 
@@ -285,16 +283,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->subscription;
     }
 
-    public function setSubscription(?Subscription $subscription): static
+    public function setSubscription(Subscription $subscription): static
     {
-        // unset the owning side of the relation if necessary
-        if ($subscription === null && $this->subscription !== null) {
-            $this->subscription->setPro(null);
-        }
-
         // set the owning side of the relation if necessary
-        if ($subscription !== null && $subscription->getPro() !== $this) {
-            $subscription->setPro($this);
+        if ($subscription->getClients() !== $this) {
+            $subscription->addClient($this);
         }
 
         $this->subscription = $subscription;
