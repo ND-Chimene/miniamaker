@@ -23,7 +23,7 @@ class Detail
     private ?string $company_name = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $adress = null;
+    private ?string $address = null;
 
     #[ORM\Column(length: 80)]
     private ?string $city = null;
@@ -75,6 +75,7 @@ class Detail
     public function setCreatedAtValue()
     {
         $this->created_at = new \DateTimeImmutable();
+        $this->updated_at = new \DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
@@ -112,19 +113,19 @@ class Detail
         return $this;
     }
 
-    public function getFullAdress(): ?string
+    public function getFulladdress(): ?string
     {
-        return $this->adress . ', ' . $this->postal_code . '' . $this->city . ', ' . $this->country;
+        return $this->address . ', ' . $this->postal_code . '' . $this->city . ', ' . $this->country;
     }
 
-    public function getAdress(): ?string
+    public function getaddress(): ?string
     {
-        return $this->adress;
+        return $this->address;
     }
 
-    public function setAdress(string $adress): static
+    public function setaddress(string $address): static
     {
-        $this->adress = $adress;
+        $this->address = $address;
 
         return $this;
     }
