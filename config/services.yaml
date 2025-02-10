@@ -9,6 +9,7 @@ parameters:
     ELEVENLABS: "%env(ELEVENLABS)%"
     STRIPE_SK: "%env(STRIPE_SK)%"
     STRIPE_PK: "%env(STRIPE_PK)%"
+    upload_users_images: "%kernel.project_dir%/public/media/images/users"
 
 services:
     # default configuration for services in *this* file

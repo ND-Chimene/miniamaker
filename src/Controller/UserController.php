@@ -10,15 +10,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-final class UserController extends AbstractController{
+final class UserController extends AbstractController
+{
     #[Route('/profile', name: 'app_profile', methods: ['GET', 'POST'])]
-    public function index(Request $request, EntityManagerInterface $em, UploaderService $us): Response
+    public function index(
+        Request $request,
+        EntityManagerInterface $em,
+        UploaderService $us
+        ): Response
     {
         $user = $this->getUser();
         $form = $this->createForm(UserFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             if (true) { // TODO: Vérification de mot de passe
                 $image = $form->get('image')->getData(); // Récupère l'image
                 if ($image != null) { // Si l'image est téléversée
@@ -30,13 +36,19 @@ final class UserController extends AbstractController{
                     );
                 }
 
-            $em->persist($user);
-            $em->flush();
+                $em->persist($user);
+                $em->flush();
+            }
 
             // Redirection avec flash message
             $this->addFlash('success', 'Votre profil à été mis à jour');
             return $this->redirectToRoute('app_profile');
         }
+
+        if (!$this->getUser()->isVerified()) {
+            $this->addFlash('danger', 'Merci de validez votre adresse e-mail.');
+        }
+
         return $this->render('user/index.html.twig', [
             'userForm' => $form,
         ]);
@@ -45,21 +57,22 @@ final class UserController extends AbstractController{
     #[Route('/complete', name: 'app_complete', methods: ['POST'])]
     public function complete(Request $request, EntityManagerInterface $em): Response
     {
-        $data = $request->request;
+        $data = $request->getPayload(); // on récupère les données du formulaire
         if (!empty($data->get('username')) && !empty($data->get('fullname'))) {
-            $user = $this->getUser();
+            // Enregistrer les données dans la base de données
+            $user = $this->getUser(); // Ici on récupère l'utilisateur actuel
             $user
-                ->setUsername($data->get('username'))
-                ->setFullname($data->get('fullname'))
+                ->setUsername($data->get('username')) // on met à jour username
+                ->setFullname($data->get('fullname')) // on met à jour fullname
                 ;
-            $em->persist($user);
-            $em->flush();
+            $em->persist($user); // on persiste l'utilisateur
+            $em->flush(); // on sauvegarde les modifications en base de données
 
+            // Redirection avec flash message
             $this->addFlash('success', 'Votre profil est complété');
-
         } else {
-            $this->addFlash('error', 'Veuillez remplir tous les champs');
+            $this->addFlash('error', 'Vous devez remplir tous les champs');
         }
-        return $this->render('app_profile');
+        return $this->redirectToRoute('app_profile');
     }
 }
