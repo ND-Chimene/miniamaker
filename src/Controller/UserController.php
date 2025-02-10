@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 final class UserController extends AbstractController
 {
@@ -16,7 +17,8 @@ final class UserController extends AbstractController
     public function index(
         Request $request,
         EntityManagerInterface $em,
-        UploaderService $us
+        UploaderService $us,
+        UserPasswordHasherInterface $ph
         ): Response
     {
         $user = $this->getUser();
@@ -25,14 +27,16 @@ final class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            if (true) { // TODO: Vérification de mot de passe
+            $password = $ph->isPasswordValid($user, $form->get('password')->getData());
+
+            if ($password) {
                 $image = $form->get('image')->getData(); // Récupère l'image
                 if ($image != null) { // Si l'image est téléversée
                     $user->setImage( // Méthode de mutation de l'image
                         $us->uploadFile( // Méthode de téléversement
                             $image, // Image téléversée
                             $user->getImage() // Image actuelle
-                            )
+                        )
                     );
                 }
 
@@ -46,7 +50,7 @@ final class UserController extends AbstractController
         }
 
         if (!$this->getUser()->isVerified()) {
-            $this->addFlash('danger', 'Merci de validez votre adresse e-mail.');
+            $this->addFlash('error', 'Merci de validez votre adresse e-mail.');
         }
 
         return $this->render('user/index.html.twig', [
