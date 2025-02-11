@@ -16,12 +16,6 @@ class Subscription
     #[ORM\Column]
     private ?int $id = null;
 
-    /**
-     * @var Collection<int, User>
-     */
-    #[ORM\OneToMany(targetEntity: User::class, mappedBy: 'subscription')]
-    private Collection $clients;
-
     #[ORM\Column]
     private ?bool $is_active = null;
 
@@ -47,10 +41,13 @@ class Subscription
     #[ORM\OneToMany(targetEntity: Promo::class, mappedBy: 'subscription')]
     private Collection $promos;
 
+    #[ORM\OneToOne(inversedBy: 'subscription', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $clients = null;
+
     public function __construct()
     {
         $this->promos = new ArrayCollection();
-        $this->clients = new ArrayCollection();
         $this->is_active = false;
         $this->amount = 99.97;
         $this->frequency = 'monthly';
@@ -164,33 +161,16 @@ class Subscription
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getClients(): Collection
+    public function getClients(): ?User
     {
         return $this->clients;
     }
 
-    public function addClient(User $client): static
+    public function setClients(User $clients): static
     {
-        if (!$this->clients->contains($client)) {
-            $this->clients->add($client);
-            $client->setSubscription($this);
-        }
+        $this->clients = $clients;
 
         return $this;
     }
 
-    public function removeClient(User $client): static
-    {
-        if ($this->clients->removeElement($client)) {
-            // set the owning side to null (unless already changed)
-            if ($client->getSubscription() === $this) {
-                $client->setSubscription($this);
-            }
-        }
-
-        return $this;
-    }
 }
