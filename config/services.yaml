@@ -10,6 +10,8 @@ parameters:
     STRIPE_SK: "%env(STRIPE_SK)%"
     STRIPE_PK: "%env(STRIPE_PK)%"
     upload_users_images: "%kernel.project_dir%/public/media/images/users"
+    STRIPE_SUB_ANNUALLY: "%env(STRIPE_SUB_ANNUALLY)%"
+    STRIPE_SUB_MONTHLY: "%env(STRIPE_SUB_MONTHLY)%"
 
 services:
     # default configuration for services in *this* file
