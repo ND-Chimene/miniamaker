@@ -16,15 +16,14 @@ class Discussion
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'discussions')]
-    private ?User $sender_id = null;
-
-    #[ORM\ManyToOne(inversedBy: 'discussions')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $sender = null;
 
     #[ORM\ManyToOne(inversedBy: 'discussions')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?User $receiver = null;
 
-    #[ORM\Column(length: 80)]
+    #[ORM\Column(length: 255)]
     private ?string $subject = null;
 
     #[ORM\Column]
@@ -36,7 +35,7 @@ class Discussion
     /**
      * @var Collection<int, Message>
      */
-    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'discussion')]
+    #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'discussion', orphanRemoval: true)]
     private Collection $messages;
 
     public function __construct()
@@ -47,18 +46,6 @@ class Discussion
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getSenderId(): ?User
-    {
-        return $this->sender_id;
-    }
-
-    public function setSenderId(?User $sender_id): static
-    {
-        $this->sender_id = $sender_id;
-
-        return $this;
     }
 
     public function getSender(): ?User
