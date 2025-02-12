@@ -79,7 +79,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var Collection<int, Discussion>
      */
-    #[ORM\OneToMany(targetEntity: Discussion::class, mappedBy: 'sender')]
+    #[ORM\OneToMany(targetEntity: Discussion::class, mappedBy: 'sender', orphanRemoval: true)]
     private Collection $discussions;
 
     /**
