@@ -73,7 +73,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: LoginHistory::class, mappedBy: 'user', orphanRemoval: true)]
     private Collection $loginHistories;
 
-    #[ORM\OneToOne(mappedBy: 'clients', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(mappedBy: 'client', cascade: ['persist', 'remove'])]
     private ?Subscription $subscription = null;
 
     /**
@@ -356,8 +356,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setSubscription(Subscription $subscription): static
     {
         // set the owning side of the relation if necessary
-        if ($subscription->getClients() !== $this) {
-            $subscription->setClients($this);
+        if ($subscription->getClient() !== $this) {
+            $subscription->setClient($this);
         }
 
         $this->subscription = $subscription;

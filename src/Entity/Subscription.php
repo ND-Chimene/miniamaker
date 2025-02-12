@@ -43,7 +43,7 @@ class Subscription
 
     #[ORM\OneToOne(inversedBy: 'subscription', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
-    private ?User $clients = null;
+    private ?User $client = null;
 
     public function __construct()
     {
@@ -161,14 +161,14 @@ class Subscription
         return $this;
     }
 
-    public function getClients(): ?User
+    public function getClient(): ?User
     {
-        return $this->clients;
+        return $this->client;
     }
 
-    public function setClients(User $clients): static
+    public function setClient(User $client): static
     {
-        $this->clients = $clients;
+        $this->client = $client;
 
         return $this;
     }
