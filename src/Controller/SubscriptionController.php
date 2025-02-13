@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Service\PaymentService;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,10 +26,10 @@ final class SubscriptionController extends AbstractController
                     intval($request->get('plan'))
                 );
                 return $this->redirectToRoute('app_subscription_check', ['link' => $checkoutUrl]);
-                // return new RedirectResponse($checkoutUrl);
+                // return new RedirectResponse($checkoutUrl);4
             }
 
-            $this->addFlash('warning', "Vous êtes déjà abonné(e)");
+            $this->addFlash('warning', "Vous êtes abonné(e)");
             return $this->redirectToRoute('app_profile');
         } catch (\Exception $e) {
             $this->addFlash('error', 'Une erreur est survenue lors de la création du paiement');
@@ -46,8 +47,13 @@ final class SubscriptionController extends AbstractController
     }
 
     #[Route('/subscription/success', name: 'app_subscription_success')]
-    public function success(): Response
+    public function success( EntityManagerInterface $em): Response
     {
+        $this->getUser()->getSubscription()->setIsActive(true);
+
+        $em->persist($this->getUser()->getSubscription()->setIsActive(true));
+        $em->flush();
+
         // Logique de traitement du succès
         return $this->redirectToRoute('app_profile');
     }
