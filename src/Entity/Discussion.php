@@ -38,6 +38,12 @@ class Discussion
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'discussion', orphanRemoval: true)]
     private Collection $messages;
 
+    #[ORM\PrePersist]
+    public function setCreatedAtValue()
+    {
+        $this->created_at = new \DateTimeImmutable();
+    }
+
     public function __construct()
     {
         $this->messages = new ArrayCollection();
