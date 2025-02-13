@@ -222,3 +222,10 @@ ul { list-style: none; }
     max-width: 50%;
     width: fit-content;
 }
+
+.toast-position {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050;
+}
