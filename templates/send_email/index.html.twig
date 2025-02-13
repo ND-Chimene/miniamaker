@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle connexion à votre compte
+{% endblock %}
+
+{% block body %}
+	<h1>Bonjour,</h1>
+
+	<p>Nous avons détecté une nouvelle connexion à votre compte Miniamaker.</p>
+	<p>Détails de la connexion :</p>
+	<ul>
+		<li>Date et heure :
+			{{ 'now'|date('d/m/Y H:i:s') }}</li>
+	</ul>
+
+	<p>Cordialement,<br>L'équipe miniamaker</p>
+{% endblock %}

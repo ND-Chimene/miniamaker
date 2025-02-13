@@ -3,9 +3,14 @@
 namespace App\Controller;
 
 use App\Entity\LoginHistory;
+use Symfony\Component\Mime\Email;
 use DeviceDetector\DeviceDetector;
+use Symfony\Component\Mime\Address;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -32,7 +37,6 @@ class SecurityController extends AbstractController
             $em->flush();
         }
 
-
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
@@ -44,6 +48,25 @@ class SecurityController extends AbstractController
             'error' => $error,
         ]);
     }
+
+
+    #[Route('/send/email', name: 'send_email')]
+    public function testEmail(MailerInterface $mailer): Response
+    {
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $emailTest = (new TemplatedEmail())
+            ->from('contact@miniamaker.fr')
+            ->to($this->getUser()->getEmail())
+            ->subject('Nouvelle connexion détectée')
+            ->htmlTemplate('send_email/index.html.twig');
+
+        $mailer->send($emailTest);
+        return $this->redirectToRoute('app_homepage');
+    }
+
 
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
