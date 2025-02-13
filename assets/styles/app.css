@@ -197,3 +197,28 @@ ul { list-style: none; }
         transform: translateX(-50%);
     }
 }
+
+.message-received {
+    background-color: rgba(156, 240, 191, 0.5);
+}
+
+.message-distributed {
+    background-color: rgba(240, 156, 156, 0.5);
+}
+
+.indigo-200 { color: #c7d2fe; }
+.fuschia-200 { color: #f5d0fe; }
+.bg-indigo-200 { background-color: #c7d2fe; }
+.bg-fuschia-200 { background-color: #f5d0fe; }
+
+
+.mx-end { align-self: flex-end; }
+
+.bubble {
+    border-radius: 1rem;
+    padding: 1rem 2rem;
+    margin-bottom: 1.75rem;
+    border-radius: 0.5rem;
+    max-width: 50%;
+    width: fit-content;
+}
