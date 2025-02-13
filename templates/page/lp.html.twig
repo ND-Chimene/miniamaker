@@ -1,16 +1,37 @@
 {% extends 'base.html.twig' %}
-{% block title %}Hello PageController!{% endblock %}
+{% block title %}Hello PageController!
+{% endblock %}
 {% block body %}
-    {% include 'components/nav/public.html.twig' %}
-    <h1>LP SANS LOGIN</h1>
-    {% if app.user %}
-        <a href={{ path('app_logout') }}>
-            Déconnexion
-        </a>
-    {% else %}
-        <a href={{ path('app_login') }}>
-            Connexion
-        </a>
-    {% endif %}
 
+
+
+	<div class="hero">
+		<h1>Bienvenue sur miniamaker</h1>
+		<a href="#" class="btn">Choisir un miniamaker</a>
+		<a href="#" class="btn">Choisir un monteur</a>
+	</div>
+
+	<div class="cards-container">
+		{% for i in 1..8 %}
+			<div class="card">
+				<img src="https://picsum.photos/400/300"/>
+				<p class="mt-5">Créateur</p>
+			</div>
+		{% endfor %}
+	</div>
+
+
+	<div class="pricing-container">
+		<div class="card">
+			<h2>990€/an</h2>
+			<p>Prise en contact avec les professionnels</p>
+			<p>2 mois offerts</p>
+			<a href="#" class="btn">Choisir</a>
+		</div>
+		<div class="card">
+			<h2>90€/mois</h2>
+			<p>Prise en contact avec les professionnels</p>
+			<a href="#" class="btn">Choisir</a>
+		</div>
+	</div>
 {% endblock %}
