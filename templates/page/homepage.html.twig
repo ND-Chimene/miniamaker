@@ -3,5 +3,54 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Tableau de bord</h1>
+
+	<style>
+		.hero {
+			text-align: center;
+			padding: 50px;
+			background: #f4f4f4;
+		}
+		.btn {
+			display: inline-block;
+			padding: 10px 20px;
+			background: rgb(209, 81, 93);
+			color: white;
+			text-decoration: none;
+			border-radius: 5px;
+			margin-top: 20px;
+		}
+		.cards-container {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 20px;
+			justify-content: center;
+			padding: 20px;
+		}
+		.card {
+			background: white;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			width: 250px;
+			text-align: center;
+		}
+	</style>
+
+
+	<div class="hero">
+		<h1>Tableau de bord</h1>
+		<a href="#" class="btn">Choisir un miniamaker</a>
+		<a href="#" class="btn">Choisir un monteur</a>
+	</div>
+
+	<div class="cards-container">
+		{% for i in 1..8 %}
+			<div class="card">
+				<h2>Card
+					{{ i }}</h2>
+				<p>Description de la carte
+					{{ i }}.</p>
+			</div>
+		{% endfor %}
+	</div>
 {% endblock %}
