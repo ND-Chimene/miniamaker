@@ -18,7 +18,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class SecurityController extends AbstractController
 {
-    #[Route(path: '/login', name: 'app_login')]
+    #[Route(path: '/login', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils, Request $request, EntityManagerInterface $em): Response
     {
         $deviceDetector = new DeviceDetector($request->headers->get('User-Agent'));
@@ -50,7 +50,7 @@ class SecurityController extends AbstractController
     }
 
 
-    #[Route('/send/email', name: 'send_email')]
+    #[Route('/send/email', name: 'send_email', methods: ['GET'])]
     public function testEmail(MailerInterface $mailer): Response
     {
         if (!$this->getUser()) {

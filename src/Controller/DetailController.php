@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Detail;
 use App\Form\DetailFormType;
+use App\Repository\DetailRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,15 +13,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class DetailController extends AbstractController
 {
-    #[Route('/detail', name: 'app_detail')]
-    public function index(Request $request, EntityManagerInterface $em): Response
+    public function __construct(
+        private EntityManagerInterface $em,
+        private DetailRepository $dr
+    ) {
+    }
+
+    #[Route('/detail', name: 'app_detail', methods: ['GET', 'POST'])]
+    public function index(Request $request): Response
     {
         $detail = new Detail();
         $detail->setPro($this->getUser());
         $form = $this->createForm(DetailFormType::class, $detail);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $role = $form->get('role')->getData();
 
             if (!empty($role)) {
@@ -31,9 +38,9 @@ final class DetailController extends AbstractController
                 }
             }
 
-            $em->persist($this->getUser());
-            $em->persist($detail);
-            $em->flush();
+            $this->em->persist($this->getUser());
+            $this->em->persist($detail);
+            $this->em->flush();
 
             // Redirection avec flash message
             $this->addFlash('success', 'Félicitations ! Votre fiche est compléte.');
