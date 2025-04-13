@@ -24,6 +24,7 @@
 		{% endblock %}
 	</head>
 	<body>
+		{% include 'components/nav.html.twig' %}
 		{% for label, messages in app.flashes %}
 			{% for message in messages %}
 				{{ include('components/_partials/toast.html.twig', {
@@ -32,7 +33,6 @@
                 }) }}
 			{% endfor %}
 		{% endfor %}
-		{% include 'components/nav.html.twig' %}
 		{% block body %}{% endblock %}
 	</body>
 </html>
