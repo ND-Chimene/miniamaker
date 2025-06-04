@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\LoginHistory;
-use Symfony\Component\Mime\Email;
 use DeviceDetector\DeviceDetector;
-use Symfony\Component\Mime\Address;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,10 +34,8 @@ class SecurityController extends AbstractController
             $em->flush();
         }
 
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('security/login.html.twig', [
