@@ -14,9 +14,7 @@ final class LandingPageController extends AbstractController
     public function index(): Response
     {
 
-        $user = $this->getUser()->getRoles()[0];
-
-        if (!$user('ROLE_AGENT') && !$user('ROLE_PRO')) {
+        if (!$this->isGranted('ROLE_AGENT') && !$this->isGranted('ROLE_PRO')) {
             return $this->redirectToRoute('app_detail');
         }
 
