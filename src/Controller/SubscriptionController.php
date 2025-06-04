@@ -17,25 +17,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 final class SubscriptionController extends AbstractController
 {
 
-    private Subscription $subscription;
-
-    public function __construct(private EntityManagerInterface $em)
-    {
-        $this->subscription = $this->getUser()->getSubscription();
-    }
-
     #[Route('/subscription', name: 'app_subscription', methods: ['POST'])]
     public function subscription(Request $request, PaymentService $ps): RedirectResponse
     {
         try {
 
-            if ($this->subscription == null || $this->subscription->isActive()) {
+            $user = $this->getUser();
+            $this->subscription = $user ? $user->getSubscription() : null;
+
+            if ($this->subscription == null || $this->subscription->isActive() == false) {
                 $checkoutUrl = $ps->setPayment(
                     $this->getUser(),
                     intval($request->get('plan'))
                 );
                 return $this->redirectToRoute('app_subscription_check', ['link' => $checkoutUrl]);
-                // return new RedirectResponse($checkoutUrl);4
             }
 
             $this->addFlash('warning', "Vous êtes abonné(e)");
@@ -58,10 +53,14 @@ final class SubscriptionController extends AbstractController
     #[Route('/subscription/success', name: 'app_subscription_success', methods: ['GET'])]
     public function success(EntityManagerInterface $em): Response
     {
-        $this->subscription->setIsActive(true);
+        $subscription = $this->getUser()->getSubscription();
 
-        $em->persist($this->getUser()->getSubscription()->setIsActive(true));
-        $em->flush();
+        if ($subscription) {
+            $subscription->setIsActive(true);
+
+            $em->persist($subscription);
+            $em->flush();
+        }
 
         // Logique de traitement du succès
         return $this->redirectToRoute('app_profile');
