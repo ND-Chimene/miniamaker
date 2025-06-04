@@ -62,6 +62,21 @@ class AppFixtures extends Fixture
             $manager->persist($user);
         }
 
+        $user = new User();
+        $user->setEmail('luc-honore-daniel@tele2.fr');
+        $user->setRoles(['ROLE_USER']);
+        $user->setPassword($this->passwordHasher->hashPassword($user, 'password123'));
+        $user->setUsername('luc-honore-daniel');
+        $user->setFullname('Luc Honoré Daniel');
+        $user->setIsMinor(false);
+        $user->setIsTerms(true);
+        $user->setIsGpdr(true);
+        $user->setIsVerified(true);
+
+        $manager->persist($user);
+        $manager->flush();
+
+
         // Création des utilisateurs PRO
         for ($i = 0; $i < 50; $i++) {
             $nom = $faker->name();
@@ -163,7 +178,6 @@ class AppFixtures extends Fixture
 
 
         // Conversion en 2 user
-
         $discussion = new Discussion();
         $discussion
             ->setSender($admin)
