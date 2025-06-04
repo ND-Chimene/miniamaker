@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\LoginHistory;
 use App\Service\LoginHistoryService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
