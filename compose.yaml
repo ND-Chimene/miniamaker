@@ -1,5 +1,6 @@
 services:
   php:
+    container_name: miniamaker_php
     build: ./docker/php
     volumes:
       - .:/var/www:delegated
@@ -9,6 +10,7 @@ services:
       - miniamaker_network
 
   nginx:
+    container_name: miniamaker_nginx
     build: ./docker/nginx
     ports:
       - "8000:80"
@@ -50,7 +52,7 @@ services:
 
   mailpit:
     image: axllent/mailpit:latest
-    container_name: mailpit
+    container_name: miniamaker_mailpit
     ports:
       - "8025:8025"  # Interface web
       - "1025:1025"  # Serveur SMTP
@@ -58,6 +60,18 @@ services:
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - miniamaker_network
+
+  messenger_worker_miniamaker:
+    container_name: miniamaker_messenger_worker
+    build: ./docker/php
+    depends_on:
+      - database
+      - mailpit
+    volumes:
+      - .:/var/www:delegated
+    command: php bin/console messenger:consume async --no-interaction
     networks:
       - miniamaker_network
 
